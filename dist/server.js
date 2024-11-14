@@ -32,6 +32,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const Modules = __importStar(require("./routes/config"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 const dbConfig = {
     user: process.env.DB_USER,

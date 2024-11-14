@@ -51,9 +51,7 @@ router.post("/facmaq", (req, res) => __awaiter(void 0, void 0, void 0, function*
             return res.json(result.recordset);
         }
         else {
-            return res
-                .status(404)
-                .json({
+            return res.status(404).json({
                 error: "No se encontraron resultados para la factura proporcionada.",
             });
         }
@@ -76,10 +74,8 @@ router.get("/facmaq/:ID_Factura", (req, res) => __awaiter(void 0, void 0, void 0
         }
         // Verifica si la factura está disponible para acceder
         if (!availableInvoices.has(ID_Factura)) {
-            return res
-                .status(403)
-                .json({
-                error: "Acceso no autorizado. Debes realizar una solicitud POST válida primero.",
+            return res.status(403).json({
+                error: "Acceso no autorizado. Debes realizar una solicitud válida primero.",
             });
         }
         const pool = yield mssql_1.default.connect({

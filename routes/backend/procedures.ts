@@ -42,11 +42,9 @@ router.post("/facmaq", async (req, res) => {
       availableInvoices.add(ID_Factura);
       return res.json(result.recordset);
     } else {
-      return res
-        .status(404)
-        .json({
-          error: "No se encontraron resultados para la factura proporcionada.",
-        });
+      return res.status(404).json({
+        error: "No se encontraron resultados para la factura proporcionada.",
+      });
     }
   } catch (err) {
     console.error("Error ejecutando el procedimiento almacenado: ", err);
@@ -68,12 +66,10 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
 
     // Verifica si la factura está disponible para acceder
     if (!availableInvoices.has(ID_Factura)) {
-      return res
-        .status(403)
-        .json({
-          error:
-            "Acceso no autorizado. Debes realizar una solicitud POST válida primero.",
-        });
+      return res.status(403).json({
+        error:
+          "Acceso no autorizado. Debes realizar una solicitud válida primero.",
+      });
     }
 
     const pool = await sql.connect({

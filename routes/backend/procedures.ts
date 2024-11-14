@@ -9,9 +9,10 @@ router.post("/informacionporfactura", async (req, res) => {
       return res.status(400).json({ error: "ID_Factura es requerido." });
     }
 
-    const ID_Factura = {
-      ID_Factura: req.body.ID_Factura,
-    };
+    const ID_Factura = parseInt(req.body.ID_Factura, 10);
+    if (isNaN(ID_Factura)) {
+      return res.status(400).json({ error: "ID_Factura debe ser un número." });
+    }
 
     const pool = await sql.connect({
       user: process.env.DB_USER,

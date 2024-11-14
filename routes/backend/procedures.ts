@@ -2,11 +2,11 @@ import express from "express";
 import sql from "mssql";
 
 const router = express.Router();
-router.post("/informacionporfactura", async (req, res) => {
+router.post("/facmaq", async (req, res) => {
   try {
     console.log("Cuerpo de la solicitud:", req.body); // Verifica el contenido de req.body
     if (!req.body || !req.body.ID_Factura) {
-      return res.status(400).json({ error: "ID_Factura es requerido." });
+      return res.status(400).json({ error: "Número de Factura requerido." });
     }
 
     // Asegúrate de que ID_Factura sea un número entero
@@ -14,7 +14,7 @@ router.post("/informacionporfactura", async (req, res) => {
     if (isNaN(ID_Factura)) {
       return res
         .status(400)
-        .json({ error: "ID_Factura debe ser un número válido." });
+        .json({ error: "El número factura debe ser un número válido." });
     }
 
     const pool = await sql.connect({
@@ -35,7 +35,10 @@ router.post("/informacionporfactura", async (req, res) => {
 
     res.json(result.recordset);
   } catch (err) {
-    console.error("Error ejecutando el procedimiento almacenado: ", err);
+    console.error(
+      "Error:! El número de factura no existe, ACCESO DENEGADO: ",
+      err
+    );
     res
       .status(500)
       .json({ error: "Error ejecutando el procedimiento almacenado." });

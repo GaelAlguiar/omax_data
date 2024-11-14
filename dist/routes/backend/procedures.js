@@ -17,23 +17,24 @@ const mssql_1 = __importDefault(require("mssql"));
 const router = express_1.default.Router();
 router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { ID_Factura } = req.body;
-        if (!ID_Factura) {
+        if (!req.body || !req.body.ID_Factura) {
             return res.status(400).json({ error: "ID_Factura es requerido." });
         }
+        const { ID_Factura } = req.body;
         const pool = yield mssql_1.default.connect({
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             server: process.env.DB_SERVER || "",
             database: process.env.DB_DATABASE,
             options: {
-                encrypt: false,
+                encrypt: false, // Cambiar a 'true' si es necesario
                 trustServerCertificate: true,
             },
         });
-        // Ejecutar el procedimiento almacenado usando sql.query
-        const query = `EXEC InformacionPorFactura @ID_Factura = ${ID_Factura}`;
-        const result = yield pool.query(query);
+        const result = yield pool
+            .request()
+            .input("ID_Factura", mssql_1.default.Int, ID_Factura)
+            .execute("InformacionPorFactura");
         res.json(result.recordset);
     }
     catch (err) {

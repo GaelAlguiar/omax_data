@@ -15,9 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mssql_1 = __importDefault(require("mssql"));
 const router = express_1.default.Router();
-router.get("/facmaq/:ID_Factura", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/facmaq", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const ID_Factura = parseInt(req.params.ID_Factura, 10);
+        console.log("Cuerpo de la solicitud:", req.body); // Verifica el contenido de req.body
+        if (!req.body || !req.body.ID_Factura) {
+            return res.status(400).json({ error: "Número de Factura requerido." });
+        }
+        // Asegúrate de que ID_Factura sea un número entero
+        const ID_Factura = parseInt(req.body.ID_Factura, 10);
         if (isNaN(ID_Factura)) {
             return res
                 .status(400)
@@ -29,7 +34,7 @@ router.get("/facmaq/:ID_Factura", (req, res) => __awaiter(void 0, void 0, void 0
             server: process.env.DB_SERVER || "",
             database: process.env.DB_DATABASE,
             options: {
-                encrypt: false,
+                encrypt: false, // Cambiar a 'true' si es necesario
                 trustServerCertificate: true,
             },
         });
@@ -37,7 +42,17 @@ router.get("/facmaq/:ID_Factura", (req, res) => __awaiter(void 0, void 0, void 0
             .request()
             .input("ID_Factura", mssql_1.default.Int, ID_Factura)
             .execute("InformacionPorFactura");
-        res.json(result.recordset);
+        // Verifica si hay resultados y solo responde si existen
+        if (result.recordset && result.recordset.length > 0) {
+            return res.json(result.recordset);
+        }
+        else {
+            return res
+                .status(404)
+                .json({
+                error: "No se encontraron resultados para la factura proporcionada.",
+            });
+        }
     }
     catch (err) {
         console.error("Error ejecutando el procedimiento almacenado: ", err);

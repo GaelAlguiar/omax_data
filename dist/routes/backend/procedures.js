@@ -21,9 +21,13 @@ router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, vo
         if (!req.body || !req.body.ID_Factura) {
             return res.status(400).json({ error: "ID_Factura es requerido." });
         }
-        const ID_Factura = {
-            ID_Factura: req.body.ID_Factura,
-        };
+        // Asegúrate de que ID_Factura sea un número entero
+        const ID_Factura = parseInt(req.body.ID_Factura, 10);
+        if (isNaN(ID_Factura)) {
+            return res
+                .status(400)
+                .json({ error: "ID_Factura debe ser un número válido." });
+        }
         const pool = yield mssql_1.default.connect({
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
@@ -36,7 +40,7 @@ router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, vo
         });
         const result = yield pool
             .request()
-            .input("ID_Factura", mssql_1.default.Int, ID_Factura)
+            .input("ID_Factura", mssql_1.default.Int, ID_Factura) // Aquí pasamos el valor directamente
             .execute("InformacionPorFactura");
         res.json(result.recordset);
     }

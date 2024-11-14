@@ -1,0 +1,26 @@
+{
+  "name": "omax.maxiem2020.jetmachiningcenter",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Gael Alguiar",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/mssql": "^9.1.5",
+    "@types/node": "^22.3.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "cron": "^3.1.8",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mssql": "^11.0.1"
+  }
+}

@@ -53,7 +53,7 @@ mssql_1.default.connect(dbConfig, (err) => {
 app.use(Modules.sp);
 // Inicia el cron job
 Modules.cronJob.start();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

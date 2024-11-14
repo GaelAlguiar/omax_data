@@ -15,14 +15,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mssql_1 = __importDefault(require("mssql"));
 const router = express_1.default.Router();
-router.get("/maquinas", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield mssql_1.default.query("EXEC InformacionPorFactura");
+        const { ID_Factura } = req.body;
+        if (!ID_Factura) {
+            return res.status(400).json({ error: "ID_Factura es requerido." });
+        }
+        const pool = yield mssql_1.default.connect({
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            server: process.env.DB_SERVER || "",
+            database: process.env.DB_DATABASE,
+            options: {
+                encrypt: false,
+                trustServerCertificate: true,
+            },
+        });
+        const result = yield pool
+            .request()
+            .input("ID_Factura", mssql_1.default.Int, ID_Factura)
+            .execute("InformacionPorFactura");
         res.json(result.recordset);
     }
     catch (err) {
-        console.log("Error executing query: ", err);
-        res.status(500).send("Error executing query");
+        console.error("Error ejecutando el procedimiento almacenado: ", err);
+        res
+            .status(500)
+            .json({ error: "Error ejecutando el procedimiento almacenado." });
     }
 }));
 exports.default = router;

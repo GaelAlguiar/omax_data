@@ -9,7 +9,9 @@ router.post("/informacionporfactura", async (req, res) => {
       return res.status(400).json({ error: "ID_Factura es requerido." });
     }
 
-    const { ID_Factura } = req.body.ID_Factura;
+    const ID_Factura = {
+      ID_Factura: req.body.ID_Factura,
+    };
 
     const pool = await sql.connect({
       user: process.env.DB_USER,
@@ -25,7 +27,7 @@ router.post("/informacionporfactura", async (req, res) => {
     const result = await pool
       .request()
       .input("ID_Factura", sql.Int, ID_Factura)
-      .execute("EXEC InformacionPorFactura");
+      .execute("InformacionPorFactura");
 
     res.json(result.recordset);
   } catch (err) {

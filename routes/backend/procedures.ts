@@ -4,11 +4,11 @@ import sql from "mssql";
 const router = express.Router();
 router.post("/informacionporfactura", async (req, res) => {
   try {
+    const { ID_Factura } = req.body;
+    console.log("Cuerpo de la solicitud:", req.body); // Verifica el contenido de req.body
     if (!req.body || !req.body.ID_Factura) {
       return res.status(400).json({ error: "ID_Factura es requerido." });
     }
-
-    const { ID_Factura } = req.body;
 
     const pool = await sql.connect({
       user: process.env.DB_USER,

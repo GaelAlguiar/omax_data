@@ -25,7 +25,7 @@ router.post("/informacionporfactura", async (req, res) => {
     const result = await pool
       .request()
       .input("ID_Factura", sql.Int, ID_Factura)
-      .execute("InformacionPorFactura");
+      .execute("EXEC InformacionPorFactura");
 
     res.json(result.recordset);
   } catch (err) {

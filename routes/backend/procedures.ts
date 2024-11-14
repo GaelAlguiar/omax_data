@@ -2,7 +2,6 @@ import express from "express";
 import sql from "mssql";
 
 const router = express.Router();
-
 router.post("/informacionporfactura", async (req, res) => {
   try {
     const { ID_Factura } = req.body;
@@ -21,10 +20,9 @@ router.post("/informacionporfactura", async (req, res) => {
       },
     });
 
-    const result = await pool
-      .request()
-      .input("ID_Factura", sql.Int, ID_Factura)
-      .execute("InformacionPorFactura");
+    // Ejecutar el procedimiento almacenado usando sql.query
+    const query = `EXEC InformacionPorFactura @ID_Factura = ${ID_Factura}`;
+    const result = await pool.query(query);
 
     res.json(result.recordset);
   } catch (err) {

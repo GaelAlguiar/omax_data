@@ -31,10 +31,9 @@ router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, vo
                 trustServerCertificate: true,
             },
         });
-        const result = yield pool
-            .request()
-            .input("ID_Factura", mssql_1.default.Int, ID_Factura)
-            .execute("InformacionPorFactura");
+        // Ejecutar el procedimiento almacenado usando sql.query
+        const query = `EXEC InformacionPorFactura @ID_Factura = ${ID_Factura}`;
+        const result = yield pool.query(query);
         res.json(result.recordset);
     }
     catch (err) {

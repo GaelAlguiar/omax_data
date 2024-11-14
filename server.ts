@@ -6,6 +6,7 @@ import * as Modules from "./routes/config";
 dotenv.config();
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 
 const dbConfig = {
   user: process.env.DB_USER,

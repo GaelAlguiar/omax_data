@@ -17,11 +17,13 @@ const mssql_1 = __importDefault(require("mssql"));
 const router = express_1.default.Router();
 router.post("/informacionporfactura", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { ID_Factura } = req.body;
         console.log("Cuerpo de la solicitud:", req.body); // Verifica el contenido de req.body
         if (!req.body || !req.body.ID_Factura) {
             return res.status(400).json({ error: "ID_Factura es requerido." });
         }
+        const ID_Factura = {
+            ID_Factura: req.body.ID_Factura,
+        };
         const pool = yield mssql_1.default.connect({
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,

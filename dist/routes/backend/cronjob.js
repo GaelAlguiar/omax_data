@@ -16,10 +16,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const https_1 = __importDefault(require("https"));
 const cron_1 = require("cron");
 const endpointsList = [
-    "https://apisql-ts.onrender.com/ventas",
-    "https://apisql-ts.onrender.com/compras",
-    "https://apisql-ts.onrender.com/notasCredito",
-    "https://apisql-ts.onrender.com/clientes",
+    "https://omax-data.onrender.com/",
+    "https://omax-data.onrender.com/facmaq",
 ];
 const makeRequest = (endpoint) => {
     return new Promise((resolve, reject) => {

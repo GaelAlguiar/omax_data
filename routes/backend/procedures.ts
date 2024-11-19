@@ -97,4 +97,44 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const { usuario, contrasena } = req.body;
+
+    if (!usuario || !contrasena) {
+      return res
+        .status(400)
+        .json({ error: "Usuario y contraseña requeridos." });
+    }
+
+    const pool = await sql.connect({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      server: process.env.DB_SERVER || "",
+      database: process.env.DB_DATABASE,
+      options: {
+        encrypt: false, // Cambiar si es necesario
+        trustServerCertificate: true,
+      },
+    });
+
+    const result = await pool
+      .request()
+      .input("Usuario", sql.NVarChar, usuario)
+      .input("Contrasena", sql.NVarChar, contrasena)
+      .execute("sp_ValidarUsuario");
+
+    if (result.recordset && result.recordset.length > 0) {
+      return res.json(result.recordset[0]);
+    } else {
+      return res
+        .status(401)
+        .json({ error: "Usuario o contraseña incorrectos." });
+    }
+  } catch (err) {
+    console.error("Error ejecutando el procedimiento almacenado: ", err);
+    res.status(500).json({ error: "Error al consultar el usuario." });
+  }
+});
+
 export default router;

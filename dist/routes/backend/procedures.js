@@ -124,8 +124,13 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             .input("Usuario", mssql_1.default.NVarChar, usuario)
             .input("Contrasena", mssql_1.default.NVarChar, contrasena)
             .execute("sp_ValidarUsuario");
+        console.log("Resultado de la consulta:", result.recordset);
         if (result.recordset && result.recordset.length > 0) {
-            return res.json(result.recordset[0]);
+            // Enviar toda la información obtenida si hay registros
+            return res.json({
+                message: "Usuario autenticado correctamente.",
+                data: result.recordset[0],
+            });
         }
         else {
             return res

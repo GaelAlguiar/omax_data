@@ -15,10 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // routes/cronJob.ts
 const https_1 = __importDefault(require("https"));
 const cron_1 = require("cron");
-const endpointsList = [
-    "https://omax-data.onrender.com/",
-    "https://omax-data.onrender.com/facmaq",
-];
+const endpointsList = ["https://omax-data.onrender.com/"];
 const makeRequest = (endpoint) => {
     return new Promise((resolve, reject) => {
         https_1.default

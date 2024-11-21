@@ -2,44 +2,55 @@ import express from "express";
 import sql from "mssql";
 
 const router = express.Router();
-let availableInvoices = new Set(); // Utilizamos un conjunto para almacenar las facturas válidas temporalmente
+let availableInvoices = new Set(); // Conjunto para almacenar facturas válidas temporalmente
 
 // Ruta POST para obtener datos
 router.post("/facmaq", async (req, res) => {
   try {
-    console.log("Cuerpo de la solicitud:", req.body); // Verifica el contenido de req.body
-    if (!req.body || !req.body.ID_Factura) {
-      return res.status(400).json({ error: "Número de Factura requerido." });
-    }
+    console.log("Cuerpo de la solicitud:", req.body); // Depuración del cuerpo de la solicitud
 
-    // Asegúrate de que ID_Factura sea un número entero
-    const ID_Factura = parseInt(req.body.ID_Factura, 10);
-    if (isNaN(ID_Factura)) {
+    // Validar que el cuerpo de la solicitud sea un objeto JSON válido
+    if (!req.body || typeof req.body !== "object") {
       return res
         .status(400)
-        .json({ error: "El número de factura debe ser un número válido." });
+        .json({ error: "El cuerpo debe ser un JSON válido." });
     }
 
+    // Validar que se proporcione `ID_Factura`
+    const { ID_Factura } = req.body;
+    if (!ID_Factura) {
+      return res.status(400).json({ error: "ID_Factura es obligatorio." });
+    }
+
+    // Validar que `ID_Factura` sea un número entero
+    const factura = parseInt(ID_Factura, 10);
+    if (isNaN(factura)) {
+      return res
+        .status(400)
+        .json({ error: "ID_Factura debe ser un número válido." });
+    }
+
+    // Conexión a la base de datos
     const pool = await sql.connect({
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       server: process.env.DB_SERVER || "",
       database: process.env.DB_DATABASE,
       options: {
-        encrypt: false, // Cambiar a 'true' si es necesario
+        encrypt: false,
         trustServerCertificate: true,
       },
     });
 
+    // Llamar al procedimiento almacenado
     const result = await pool
       .request()
-      .input("ID_Factura", sql.Int, ID_Factura)
+      .input("ID_Factura", sql.Int, factura)
       .execute("InformacionPorFactura");
 
-    // Verifica si hay resultados y solo responde si existen
+    // Verificar resultados
     if (result.recordset && result.recordset.length > 0) {
-      // Agrega la factura al conjunto de facturas disponibles
-      availableInvoices.add(ID_Factura);
+      availableInvoices.add(factura); // Agregar la factura al conjunto de facturas válidas
       return res.json(result.recordset);
     } else {
       return res.status(404).json({
@@ -58,13 +69,15 @@ router.post("/facmaq", async (req, res) => {
 router.get("/facmaq/:ID_Factura", async (req, res) => {
   try {
     const ID_Factura = parseInt(req.params.ID_Factura, 10);
+
+    // Validar que `ID_Factura` sea un número entero
     if (isNaN(ID_Factura)) {
       return res
         .status(400)
-        .json({ error: "El número de factura debe ser un número válido." });
+        .json({ error: "ID_Factura debe ser un número válido." });
     }
 
-    // Verifica si la factura está disponible para acceder
+    // Verificar si la factura está disponible
     if (!availableInvoices.has(ID_Factura)) {
       return res.status(403).json({
         error:
@@ -72,6 +85,7 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
       });
     }
 
+    // Conexión a la base de datos
     const pool = await sql.connect({
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
@@ -83,6 +97,7 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
       },
     });
 
+    // Llamar al procedimiento almacenado
     const result = await pool
       .request()
       .input("ID_Factura", sql.Int, ID_Factura)
@@ -96,27 +111,40 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
       .json({ error: "Error ejecutando el procedimiento almacenado." });
   }
 });
+
+// Ruta POST para login
 router.post("/login", async (req, res) => {
   try {
-    const { usuario, contrasena } = req.body;
+    console.log("Cuerpo de la solicitud:", req.body); // Depuración del cuerpo de la solicitud
 
+    // Validar que el cuerpo de la solicitud sea un objeto JSON válido
+    if (!req.body || typeof req.body !== "object") {
+      return res
+        .status(400)
+        .json({ error: "El cuerpo debe ser un JSON válido." });
+    }
+
+    // Validar que se proporcionen `usuario` y `contrasena`
+    const { usuario, contrasena } = req.body;
     if (!usuario || !contrasena) {
       return res
         .status(400)
-        .json({ error: "Usuario y contraseña requeridos." });
+        .json({ error: "Usuario y contraseña son obligatorios." });
     }
 
+    // Conexión a la base de datos
     const pool = await sql.connect({
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       server: process.env.DB_SERVER || "",
       database: process.env.DB_DATABASE,
       options: {
-        encrypt: false, // Cambiar si es necesario
+        encrypt: false,
         trustServerCertificate: true,
       },
     });
 
+    // Llamar al procedimiento almacenado
     const result = await pool
       .request()
       .input("Usuario", sql.NVarChar, usuario)
@@ -126,7 +154,6 @@ router.post("/login", async (req, res) => {
     console.log("Resultado de la consulta:", result.recordset);
 
     if (result.recordset && result.recordset.length > 0) {
-      // Enviar toda la información obtenida si hay registros
       return res.json({
         message: "Usuario autenticado correctamente.",
         data: result.recordset[0],

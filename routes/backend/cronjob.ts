@@ -2,10 +2,7 @@
 import https from "https";
 import { CronJob } from "cron";
 
-const endpointsList: string[] = [
-  "https://omax-data.onrender.com/",
-  "https://omax-data.onrender.com/facmaq",
-];
+const endpointsList: string[] = ["https://omax-data.onrender.com/"];
 
 const makeRequest = (endpoint: string): Promise<string> => {
   return new Promise((resolve, reject) => {

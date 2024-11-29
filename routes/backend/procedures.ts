@@ -4,6 +4,18 @@ import sql from "mssql";
 const router = express.Router();
 let availableInvoices = new Set(); // Conjunto para almacenar facturas válidas temporalmente
 
+// Conexión a la base de datos
+const pool = sql.connect({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER || "",
+  database: process.env.DB_DATABASE,
+  options: {
+    encrypt: false,
+    trustServerCertificate: true,
+  },
+});
+
 // Ruta POST para obtener datos
 router.post("/facmaq", async (req, res) => {
   try {
@@ -30,20 +42,8 @@ router.post("/facmaq", async (req, res) => {
         .json({ error: "ID_Factura debe ser un número válido." });
     }
 
-    // Conexión a la base de datos
-    const pool = await sql.connect({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      server: process.env.DB_SERVER || "",
-      database: process.env.DB_DATABASE,
-      options: {
-        encrypt: false,
-        trustServerCertificate: true,
-      },
-    });
-
     // Llamar al procedimiento almacenado
-    const result = await pool
+    const result = await (await pool)
       .request()
       .input("ID_Factura", sql.Int, factura)
       .execute("InformacionPorFactura");
@@ -85,20 +85,8 @@ router.get("/facmaq/:ID_Factura", async (req, res) => {
       });
     }
 
-    // Conexión a la base de datos
-    const pool = await sql.connect({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      server: process.env.DB_SERVER || "",
-      database: process.env.DB_DATABASE,
-      options: {
-        encrypt: false,
-        trustServerCertificate: true,
-      },
-    });
-
     // Llamar al procedimiento almacenado
-    const result = await pool
+    const result = await (await pool)
       .request()
       .input("ID_Factura", sql.Int, ID_Factura)
       .execute("InformacionPorFactura");
@@ -132,20 +120,8 @@ router.post("/login", async (req, res) => {
         .json({ error: "Usuario y contraseña son obligatorios." });
     }
 
-    // Conexión a la base de datos
-    const pool = await sql.connect({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      server: process.env.DB_SERVER || "",
-      database: process.env.DB_DATABASE,
-      options: {
-        encrypt: false,
-        trustServerCertificate: true,
-      },
-    });
-
     // Llamar al procedimiento almacenado
-    const result = await pool
+    const result = await (await pool)
       .request()
       .input("Usuario", sql.NVarChar, usuario)
       .input("Contrasena", sql.NVarChar, contrasena)

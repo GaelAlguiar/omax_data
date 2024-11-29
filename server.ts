@@ -32,9 +32,6 @@ sql.connect(dbConfig, (err) => {
 // Usa las rutas definidas en los archivos separados
 app.use(Modules.sp);
 
-// Inicia el cron job
-Modules.cronJob.start();
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
